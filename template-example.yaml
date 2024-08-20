@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: "Test Lambda in Local"
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 2 # Seconds
+    MemorySize: 128 # MB
+
+Parameters:
+  TESTENV:
+    Type: String
+    Default: ""
+
+Resources:
+  TestGolangLocalFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      PackageType: Image
+      Architectures:
+        - arm64 # if arm = arm64 or intel = x86_64
+      Events:
+        CatchAll:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /test-lambda # for add path params = /test-lambda/{foo}
+            Method: POST # Use methods http POST - PUT - GET - DELETE - PATH
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables:
+          TEST_ENV: !Ref TEST_ENV
+
+    Metadata:
+      DockerContext: .
+      Dockerfile: Dockerfile.local
